@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Social Spinner</title>
+<style>
+  :root {
+    --bg: #0f1226;
+    --bg-2: #1a1f3a;
+    --fg: #f5f3ff;
+    --muted: #a4a8c4;
+    --accent: #ffd166;
+    --danger: #ef476f;
+    --ok: #06d6a0;
+    --card: #1c2142;
+    --border: rgba(255,255,255,0.08);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background:
+      radial-gradient(1200px 600px at 20% -10%, #2a1f4a 0%, transparent 60%),
+      radial-gradient(900px 500px at 110% 20%, #1f3a4a 0%, transparent 55%),
+      var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  header {
+    text-align: center;
+    padding: 28px 16px 8px;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 28px;
+    letter-spacing: -0.02em;
+  }
+  header p {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 24px;
+  }
+  @media (max-width: 760px) {
+    main { grid-template-columns: 1fr; }
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+  }
+  .wheel-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .wheel-stage {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    aspect-ratio: 1 / 1;
+  }
+  canvas#wheel {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: 50%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.45), inset 0 0 0 6px rgba(255,255,255,0.05);
+    background: #11142a;
+  }
+  .pointer {
+    position: absolute;
+    top: -2px; left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 14px solid transparent;
+    border-right: 14px solid transparent;
+    border-top: 24px solid var(--accent);
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
+    z-index: 2;
+  }
+  .hub {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #fff 0%, #b9b9d6 60%, #6a6f99 100%);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.5);
+    z-index: 1;
+  }
+  button.spin {
+    background: linear-gradient(180deg, #ffd166 0%, #f0a93b 100%);
+    color: #2a1f00;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 999px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(255,209,102,0.35);
+    transition: transform 80ms ease;
+  }
+  button.spin:active { transform: scale(0.97); }
+  button.spin:disabled { opacity: 0.5; cursor: not-allowed; }
+  .result {
+    min-height: 28px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .result .winner { color: var(--ok); }
+  .panel h2 {
+    margin: 0 0 12px;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+  form.add {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  input[type="text"] {
+    flex: 1;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--fg);
+    padding: 10px 12px;
+    font-size: 15px;
+    outline: none;
+  }
+  input[type="text"]:focus { border-color: var(--accent); }
+  button.add {
+    background: var(--ok);
+    color: #003b2c;
+    border: none;
+    border-radius: 10px;
+    padding: 0 14px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  ul.ideas {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 360px;
+    overflow-y: auto;
+  }
+  ul.ideas li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    margin-bottom: 8px;
+    background: var(--bg-2);
+  }
+  ul.ideas li button {
+    background: transparent;
+    color: var(--danger);
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+  }
+  ul.ideas li button:hover { background: rgba(239,71,111,0.12); }
+  .empty {
+    color: var(--muted);
+    font-style: italic;
+    text-align: center;
+    padding: 20px 0;
+  }
+  .status {
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    padding: 12px 16px 24px;
+  }
+  .status.error { color: var(--danger); }
+  .setup-banner {
+    max-width: 720px;
+    margin: 24px auto;
+    padding: 20px;
+    background: #2a1f00;
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    color: var(--accent);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .setup-banner code {
+    background: rgba(0,0,0,0.35);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>🎡 Social Spinner</h1>
+  <p>Add an idea, spin the wheel, go do the thing.</p>
+</header>
+
+<main>
+  <section class="card wheel-wrap">
+    <div class="wheel-stage">
+      <div class="pointer"></div>
+      <canvas id="wheel" width="800" height="800"></canvas>
+      <div class="hub"></div>
+    </div>
+    <button class="spin" id="spinBtn">Spin the wheel</button>
+    <div class="result" id="result"></div>
+  </section>
+
+  <aside class="card panel">
+    <h2>Ideas</h2>
+    <form class="add" id="addForm">
+      <input type="text" id="addInput" placeholder="e.g. Pizza & board games" maxlength="60" required />
+      <button class="add" type="submit">Add</button>
+    </form>
+    <ul class="ideas" id="ideasList"></ul>
+  </aside>
+</main>
+
+<div class="status" id="status">Connecting…</div>
+
+<script type="module">
+  // ============================================================
+  //  PASTE YOUR SUPABASE PROJECT VALUES HERE
+  //  (Both are safe for browser use — the anon key is public.)
+  // ============================================================
+  const SUPABASE_URL = "https://ngocbbgwpwmocmehyjeq.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5nb2NiYmd3cHdtb2NtZWh5amVxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyOTk5MjEsImV4cCI6MjA5Mjg3NTkyMX0.KSZ-STUeF6FO-SSOb3V-5kj919FuAccfp4m9ldIKlHQ";
+  // ============================================================
+
+  import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+  const statusEl = document.getElementById("status");
+  const listEl   = document.getElementById("ideasList");
+  const formEl   = document.getElementById("addForm");
+  const inputEl  = document.getElementById("addInput");
+  const spinBtn  = document.getElementById("spinBtn");
+  const resultEl = document.getElementById("result");
+  const canvas   = document.getElementById("wheel");
+  const ctx      = canvas.getContext("2d");
+
+  // Show a friendly setup banner if keys aren't filled in yet.
+  if (SUPABASE_URL.startsWith("YOUR_") || SUPABASE_ANON_KEY.startsWith("YOUR_")) {
+    const banner = document.createElement("div");
+    banner.className = "setup-banner";
+    banner.innerHTML = `
+      <strong>Almost there!</strong> Open <code>index.html</code> and replace
+      <code>https://ngocbbgwpwmocmehyjeq.supabase.co</code> and <code>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5nb2NiYmd3cHdtb2NtZWh5amVxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyOTk5MjEsImV4cCI6MjA5Mjg3NTkyMX0.KSZ-STUeF6FO-SSOb3V-5kj919FuAccfp4m9ldIKlHQ</code> with the values
+      from your Supabase project (Settings → API).
+    `;
+    document.body.insertBefore(banner, document.querySelector("main"));
+    statusEl.textContent = "Waiting for Supabase keys.";
+    statusEl.classList.add("error");
+  }
+
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  let ideas = [];
+  let currentAngle = 0;   // radians
+  let spinning = false;
+
+  // ---------- Wheel rendering ----------
+  function colourFor(i, n) {
+    return `hsl(${(i * 360) / Math.max(n,1)}, 70%, 55%)`;
+  }
+
+  function drawWheel() {
+    const W = canvas.width, H = canvas.height;
+    const cx = W / 2, cy = H / 2, r = Math.min(cx, cy) - 8;
+    ctx.clearRect(0, 0, W, H);
+
+    if (ideas.length === 0) {
+      ctx.fillStyle = "#11142a";
+      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#a4a8c4";
+      ctx.font = "600 28px -apple-system, system-ui, sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("Add some ideas", cx, cy - 16);
+      ctx.fillText("to get started →", cx, cy + 22);
+      return;
+    }
+
+    const n = ideas.length;
+    const slice = (Math.PI * 2) / n;
+
+    for (let i = 0; i < n; i++) {
+      const a0 = currentAngle + i * slice - Math.PI / 2;
+      const a1 = a0 + slice;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, r, a0, a1);
+      ctx.closePath();
+      ctx.fillStyle = colourFor(i, n);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(0,0,0,0.25)";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Label
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(a0 + slice / 2);
+      ctx.textAlign = "right";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "rgba(0,0,0,0.85)";
+      ctx.font = "700 22px -apple-system, system-ui, sans-serif";
+      const label = ideas[i].text.length > 24 ? ideas[i].text.slice(0, 23) + "…" : ideas[i].text;
+      ctx.fillText(label, r - 18, 0);
+      ctx.restore();
+    }
+  }
+
+  // ---------- Spin ----------
+  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+  function spin() {
+    if (spinning || ideas.length === 0) return;
+    spinning = true;
+    spinBtn.disabled = true;
+    resultEl.textContent = "";
+
+    const n = ideas.length;
+    const slice = (Math.PI * 2) / n;
+    const winnerIdx = Math.floor(Math.random() * n);
+
+    // Want the centre of slice winnerIdx to land at the top (pointer points down at -π/2 from centre).
+    // Slice i centre angle (without rotation) = i*slice + slice/2 - π/2  → we want this + currentAngle == -π/2 + 2πk
+    // So target rotation = -winnerIdx*slice - slice/2 + 2π * fullSpins
+    const fullSpins = 5 + Math.random() * 2;
+    const target = -winnerIdx * slice - slice / 2 + Math.PI * 2 * fullSpins;
+
+    const start = currentAngle;
+    // Normalize start so we always rotate forward by a positive amount > some minimum
+    const delta = target - (start % (Math.PI * 2));
+    const duration = 4200;
+    const t0 = performance.now();
+
+    function frame(now) {
+      const t = Math.min(1, (now - t0) / duration);
+      currentAngle = start + delta * easeOutCubic(t);
+      drawWheel();
+      if (t < 1) {
+        requestAnimationFrame(frame);
+      } else {
+        spinning = false;
+        spinBtn.disabled = false;
+        const winner = ideas[winnerIdx];
+        resultEl.innerHTML = `🎉 <span class="winner">${escapeHTML(winner.text)}</span>`;
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  spinBtn.addEventListener("click", spin);
+
+  // ---------- Idea list ----------
+  function escapeHTML(s) {
+    return s.replace(/[&<>"']/g, c => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
+  }
+
+  function renderList() {
+    listEl.innerHTML = "";
+    if (ideas.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "empty";
+      empty.textContent = "No ideas yet. Add the first one!";
+      listEl.appendChild(empty);
+      return;
+    }
+    for (const idea of ideas) {
+      const li = document.createElement("li");
+      const span = document.createElement("span");
+      span.textContent = idea.text;
+      const btn = document.createElement("button");
+      btn.textContent = "✕";
+      btn.title = "Remove";
+      btn.addEventListener("click", () => removeIdea(idea.id));
+      li.appendChild(span);
+      li.appendChild(btn);
+      listEl.appendChild(li);
+    }
+  }
+
+  // ---------- Supabase ----------
+  async function loadIdeas() {
+    const { data, error } = await supabase
+      .from("ideas")
+      .select("*")
+      .order("created_at", { ascending: true });
+    if (error) {
+      statusEl.textContent = "Error loading ideas: " + error.message;
+      statusEl.classList.add("error");
+      return;
+    }
+    ideas = data || [];
+    renderList();
+    drawWheel();
+    statusEl.textContent = `Connected · ${ideas.length} idea${ideas.length===1?"":"s"}`;
+    statusEl.classList.remove("error");
+  }
+
+  async function addIdea(text) {
+    const { error } = await supabase.from("ideas").insert({ text });
+    if (error) alert("Couldn't add: " + error.message);
+  }
+
+  async function removeIdea(id) {
+    const { error } = await supabase.from("ideas").delete().eq("id", id);
+    if (error) alert("Couldn't remove: " + error.message);
+  }
+
+  formEl.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const text = inputEl.value.trim();
+    if (!text) return;
+    inputEl.value = "";
+    await addIdea(text);
+  });
+
+  // Realtime subscription — everyone sees changes immediately.
+  function subscribe() {
+    supabase
+      .channel("ideas-changes")
+      .on("postgres_changes",
+          { event: "*", schema: "public", table: "ideas" },
+          () => loadIdeas())
+      .subscribe();
+  }
+
+  // Boot
+  if (!SUPABASE_URL.startsWith("YOUR_") && !SUPABASE_ANON_KEY.startsWith("YOUR_")) {
+    loadIdeas();
+    subscribe();
+  } else {
+    drawWheel(); // show the empty-state circle
+  }
+</script>
+</body>
+</html>
+
