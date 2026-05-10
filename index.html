@@ -30,7 +30,7 @@
   }
   header {
     text-align: center;
-    padding: 28px 16px 8px;
+    padding: 28px 16px 0;
   }
   header h1 {
     margin: 0;
@@ -42,6 +42,103 @@
     color: var(--muted);
     font-size: 14px;
   }
+
+  /* ---- Tab navigation ---- */
+  .tabs {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    padding: 20px 16px 0;
+  }
+  .tab-btn {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    color: var(--muted);
+    padding: 10px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 12px 12px 0 0;
+    transition: color 120ms, background 120ms;
+  }
+  .tab-btn.active {
+    background: var(--card);
+    color: var(--fg);
+    border-color: rgba(255,255,255,0.14);
+  }
+  .tab-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 0;
+  }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ---- Shared card / form styles ---- */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+  }
+  input[type="text"] {
+    flex: 1;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--fg);
+    padding: 10px 12px;
+    font-size: 15px;
+    outline: none;
+    min-width: 0;
+  }
+  input[type="text"]:focus { border-color: var(--accent); }
+  .btn-add {
+    background: var(--ok);
+    color: #003b2c;
+    border: none;
+    border-radius: 10px;
+    padding: 0 16px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    height: 40px;
+  }
+  .btn-add:hover { opacity: 0.9; }
+  .empty {
+    color: var(--muted);
+    font-style: italic;
+    text-align: center;
+    padding: 20px 0;
+  }
+  .status {
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    padding: 12px 16px 24px;
+  }
+  .status.error { color: var(--danger); }
+  .setup-banner {
+    max-width: 720px;
+    margin: 24px auto;
+    padding: 20px;
+    background: #2a1f00;
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    color: var(--accent);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .setup-banner code {
+    background: rgba(0,0,0,0.35);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+  }
+
+  /* ---- Spinner tab ---- */
   main {
     max-width: 960px;
     margin: 0 auto;
@@ -52,12 +149,6 @@
   }
   @media (max-width: 760px) {
     main { grid-template-columns: 1fr; }
-  }
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
   }
   .wheel-wrap {
     display: flex;
@@ -128,30 +219,10 @@
     letter-spacing: 0.08em;
     color: var(--muted);
   }
-  form.add {
+  form.add-idea {
     display: flex;
     gap: 8px;
     margin-bottom: 14px;
-  }
-  input[type="text"] {
-    flex: 1;
-    background: var(--bg-2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: var(--fg);
-    padding: 10px 12px;
-    font-size: 15px;
-    outline: none;
-  }
-  input[type="text"]:focus { border-color: var(--accent); }
-  button.add {
-    background: var(--ok);
-    color: #003b2c;
-    border: none;
-    border-radius: 10px;
-    padding: 0 14px;
-    font-weight: 700;
-    cursor: pointer;
   }
   ul.ideas {
     list-style: none;
@@ -181,64 +252,231 @@
     border-radius: 6px;
   }
   ul.ideas li button:hover { background: rgba(239,71,111,0.12); }
-  .empty {
-    color: var(--muted);
-    font-style: italic;
-    text-align: center;
-    padding: 20px 0;
+
+  /* ---- Hosting tab ---- */
+  .hosting-wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 20px 16px 40px;
   }
-  .status {
-    text-align: center;
-    color: var(--muted);
-    font-size: 13px;
-    padding: 12px 16px 24px;
+  .hosting-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
   }
-  .status.error { color: var(--danger); }
-  .setup-banner {
-    max-width: 720px;
-    margin: 24px auto;
+  .hosting-top h2 {
+    margin: 0;
+    font-size: 18px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    flex: 0 0 auto;
+  }
+  .new-topic-form {
+    display: flex;
+    gap: 8px;
+    flex: 1;
+    min-width: 220px;
+  }
+  .topics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  @media (max-width: 600px) {
+    .topics-grid { grid-template-columns: 1fr; }
+  }
+
+  /* Topic card */
+  .topic-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
     padding: 20px;
-    background: #2a1f00;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .topic-card-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .topic-title {
+    flex: 1;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--fg);
+    word-break: break-word;
+  }
+  .topic-title-input {
+    flex: 1;
+    background: var(--bg-2);
     border: 1px solid var(--accent);
-    border-radius: 12px;
-    color: var(--accent);
-    font-size: 14px;
-    line-height: 1.5;
+    border-radius: 8px;
+    color: var(--fg);
+    padding: 6px 10px;
+    font-size: 15px;
+    font-weight: 700;
+    outline: none;
+    min-width: 0;
   }
-  .setup-banner code {
-    background: rgba(0,0,0,0.35);
-    padding: 2px 6px;
+  .icon-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px 7px;
+    border-radius: 6px;
+    font-size: 15px;
+    color: var(--muted);
+    transition: background 120ms, color 120ms;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .icon-btn:hover { background: rgba(255,255,255,0.08); color: var(--fg); }
+  .icon-btn.danger { color: var(--danger); }
+  .icon-btn.danger:hover { background: rgba(239,71,111,0.12); }
+
+  /* Next button */
+  .next-btn {
+    width: 100%;
+    background: linear-gradient(180deg, var(--accent) 0%, #f0a93b 100%);
+    color: #2a1f00;
+    border: none;
+    padding: 10px 0;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 120ms;
+  }
+  .next-btn:hover { opacity: 0.88; }
+  .next-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  /* Add name form inside a topic */
+  .add-name-form {
+    display: flex;
+    gap: 8px;
+  }
+
+  /* Names list */
+  ul.names-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  ul.names-list li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--bg-2);
+    transition: border-color 200ms, background 200ms;
+  }
+  ul.names-list li.current {
+    border-color: var(--ok);
+    background: rgba(6,214,160,0.08);
+  }
+  .name-text {
+    flex: 1;
+    font-size: 15px;
+    word-break: break-word;
+  }
+  ul.names-list li.current .name-text {
+    color: var(--ok);
+    font-weight: 700;
+  }
+  .current-badge {
+    font-size: 11px;
+    background: var(--ok);
+    color: #003b2c;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .move-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    flex-shrink: 0;
+  }
+  .move-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 1px 5px;
     border-radius: 4px;
-    font-size: 13px;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.4;
+    transition: background 100ms, color 100ms;
   }
+  .move-btn:hover:not(:disabled) { background: rgba(255,255,255,0.09); color: var(--fg); }
+  .move-btn:disabled { opacity: 0.2; cursor: default; }
 </style>
 </head>
 <body>
+
 <header>
   <h1>🎡 Social Spinner</h1>
   <p>Add an idea, spin the wheel, go do the thing.</p>
 </header>
 
-<main>
-  <section class="card wheel-wrap">
-    <div class="wheel-stage">
-      <div class="pointer"></div>
-      <canvas id="wheel" width="800" height="800"></canvas>
-      <div class="hub"></div>
-    </div>
-    <button class="spin" id="spinBtn">Spin the wheel</button>
-    <div class="result" id="result"></div>
-  </section>
+<!-- Tab navigation -->
+<nav class="tabs" role="tablist">
+  <button class="tab-btn active" data-tab="spinner" role="tab" aria-selected="true">🎡 Spinner</button>
+  <button class="tab-btn" data-tab="hosting" role="tab" aria-selected="false">🏠 Whose Hosting Anyway?</button>
+</nav>
+<hr class="tab-divider" />
 
-  <aside class="card panel">
-    <h2>Ideas</h2>
-    <form class="add" id="addForm">
-      <input type="text" id="addInput" placeholder="e.g. Pizza & board games" maxlength="60" required />
-      <button class="add" type="submit">Add</button>
-    </form>
-    <ul class="ideas" id="ideasList"></ul>
-  </aside>
-</main>
+<!-- ===================== SPINNER TAB ===================== -->
+<div id="tab-spinner" class="tab-content active">
+  <main>
+    <section class="card wheel-wrap">
+      <div class="wheel-stage">
+        <div class="pointer"></div>
+        <canvas id="wheel" width="800" height="800"></canvas>
+        <div class="hub"></div>
+      </div>
+      <button class="spin" id="spinBtn">Spin the wheel</button>
+      <div class="result" id="result"></div>
+    </section>
+
+    <aside class="card panel">
+      <h2>Ideas</h2>
+      <form class="add-idea" id="addForm">
+        <input type="text" id="addInput" placeholder="e.g. Pizza &amp; board games" maxlength="60" required />
+        <button class="btn-add" type="submit">Add</button>
+      </form>
+      <ul class="ideas" id="ideasList"></ul>
+    </aside>
+  </main>
+</div>
+
+<!-- ===================== HOSTING TAB ===================== -->
+<div id="tab-hosting" class="tab-content">
+  <div class="hosting-wrap">
+    <div class="hosting-top">
+      <h2>Topics</h2>
+      <form class="new-topic-form" id="newTopicForm">
+        <input type="text" id="newTopicInput" placeholder="New topic name…" maxlength="80" required />
+        <button class="btn-add" type="submit">Create</button>
+      </form>
+    </div>
+    <div class="topics-grid" id="topicsGrid">
+      <div class="empty">Loading…</div>
+    </div>
+  </div>
+</div>
 
 <div class="status" id="status">Connecting…</div>
 
@@ -247,13 +485,51 @@
   //  PASTE YOUR SUPABASE PROJECT VALUES HERE
   //  (Both are safe for browser use — the anon key is public.)
   // ============================================================
-  const SUPABASE_URL = "https://ngocbbgwpwmocmehyjeq.supabase.co";
+  const SUPABASE_URL     = "https://ngocbbgwpwmocmehyjeq.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5nb2NiYmd3cHdtb2NtZWh5amVxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyOTk5MjEsImV4cCI6MjA5Mjg3NTkyMX0.KSZ-STUeF6FO-SSOb3V-5kj919FuAccfp4m9ldIKlHQ";
   // ============================================================
 
   import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+  // ── Shared utilities ─────────────────────────────────────────
+  function escapeHTML(s) {
+    return String(s).replace(/[&<>"']/g, c => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
+  }
+
   const statusEl = document.getElementById("status");
+
+  if (SUPABASE_URL.startsWith("YOUR_") || SUPABASE_ANON_KEY.startsWith("YOUR_")) {
+    const banner = document.createElement("div");
+    banner.className = "setup-banner";
+    banner.innerHTML = `<strong>Almost there!</strong> Open <code>index.html</code> and replace
+      <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code> with the values
+      from your Supabase project (Settings → API).`;
+    document.body.insertBefore(banner, document.querySelector(".tabs"));
+    statusEl.textContent = "Waiting for Supabase keys.";
+    statusEl.classList.add("error");
+  }
+
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // ── Tab switching ─────────────────────────────────────────────
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".tab-btn").forEach(b => {
+        b.classList.remove("active");
+        b.setAttribute("aria-selected", "false");
+      });
+      document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+      btn.classList.add("active");
+      btn.setAttribute("aria-selected", "true");
+      document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════════
+  //  SPINNER TAB
+  // ═══════════════════════════════════════════════════════════════
   const listEl   = document.getElementById("ideasList");
   const formEl   = document.getElementById("addForm");
   const inputEl  = document.getElementById("addInput");
@@ -262,29 +538,12 @@
   const canvas   = document.getElementById("wheel");
   const ctx      = canvas.getContext("2d");
 
-  // Show a friendly setup banner if keys aren't filled in yet.
-  if (SUPABASE_URL.startsWith("YOUR_") || SUPABASE_ANON_KEY.startsWith("YOUR_")) {
-    const banner = document.createElement("div");
-    banner.className = "setup-banner";
-    banner.innerHTML = `
-      <strong>Almost there!</strong> Open <code>index.html</code> and replace
-      <code>https://ngocbbgwpwmocmehyjeq.supabase.co</code> and <code>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5nb2NiYmd3cHdtb2NtZWh5amVxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyOTk5MjEsImV4cCI6MjA5Mjg3NTkyMX0.KSZ-STUeF6FO-SSOb3V-5kj919FuAccfp4m9ldIKlHQ</code> with the values
-      from your Supabase project (Settings → API).
-    `;
-    document.body.insertBefore(banner, document.querySelector("main"));
-    statusEl.textContent = "Waiting for Supabase keys.";
-    statusEl.classList.add("error");
-  }
-
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
   let ideas = [];
-  let currentAngle = 0;   // radians
+  let currentAngle = 0;
   let spinning = false;
 
-  // ---------- Wheel rendering ----------
   function colourFor(i, n) {
-    return `hsl(${(i * 360) / Math.max(n,1)}, 70%, 55%)`;
+    return `hsl(${(i * 360) / Math.max(n, 1)}, 70%, 55%)`;
   }
 
   function drawWheel() {
@@ -320,7 +579,6 @@
       ctx.lineWidth = 2;
       ctx.stroke();
 
-      // Label
       ctx.save();
       ctx.translate(cx, cy);
       ctx.rotate(a0 + slice / 2);
@@ -334,7 +592,6 @@
     }
   }
 
-  // ---------- Spin ----------
   function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
   function spin() {
@@ -346,15 +603,9 @@
     const n = ideas.length;
     const slice = (Math.PI * 2) / n;
     const winnerIdx = Math.floor(Math.random() * n);
-
-    // Want the centre of slice winnerIdx to land at the top (pointer points down at -π/2 from centre).
-    // Slice i centre angle (without rotation) = i*slice + slice/2 - π/2  → we want this + currentAngle == -π/2 + 2πk
-    // So target rotation = -winnerIdx*slice - slice/2 + 2π * fullSpins
     const fullSpins = 5 + Math.random() * 2;
     const target = -winnerIdx * slice - slice / 2 + Math.PI * 2 * fullSpins;
-
     const start = currentAngle;
-    // Normalize start so we always rotate forward by a positive amount > some minimum
     const delta = target - (start % (Math.PI * 2));
     const duration = 4200;
     const t0 = performance.now();
@@ -377,14 +628,7 @@
 
   spinBtn.addEventListener("click", spin);
 
-  // ---------- Idea list ----------
-  function escapeHTML(s) {
-    return s.replace(/[&<>"']/g, c => ({
-      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-    }[c]));
-  }
-
-  function renderList() {
+  function renderIdeas() {
     listEl.innerHTML = "";
     if (ideas.length === 0) {
       const empty = document.createElement("div");
@@ -407,7 +651,6 @@
     }
   }
 
-  // ---------- Supabase ----------
   async function loadIdeas() {
     const { data, error } = await supabase
       .from("ideas")
@@ -419,9 +662,9 @@
       return;
     }
     ideas = data || [];
-    renderList();
+    renderIdeas();
     drawWheel();
-    statusEl.textContent = `Connected · ${ideas.length} idea${ideas.length===1?"":"s"}`;
+    statusEl.textContent = `Connected · ${ideas.length} idea${ideas.length === 1 ? "" : "s"}`;
     statusEl.classList.remove("error");
   }
 
@@ -443,24 +686,301 @@
     await addIdea(text);
   });
 
-  // Realtime subscription — everyone sees changes immediately.
+  // ═══════════════════════════════════════════════════════════════
+  //  HOSTING TAB
+  // ═══════════════════════════════════════════════════════════════
+  let topics = [];
+  let names  = [];
+
+  function getNamesForTopic(topicId) {
+    return names
+      .filter(n => n.topic_id === topicId)
+      .sort((a, b) => a.position - b.position);
+  }
+
+  function renderHosting() {
+    const grid = document.getElementById("topicsGrid");
+    if (!grid) return;
+    grid.innerHTML = "";
+
+    if (topics.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "empty";
+      empty.textContent = "No topics yet — create one above!";
+      grid.appendChild(empty);
+      return;
+    }
+
+    for (const topic of topics) {
+      const topicNames = getNamesForTopic(topic.id);
+      const card = document.createElement("div");
+      card.className = "topic-card";
+
+      // ── Header (title + rename + delete) ──
+      const header = document.createElement("div");
+      header.className = "topic-card-header";
+
+      const titleSpan = document.createElement("span");
+      titleSpan.className = "topic-title";
+      titleSpan.textContent = topic.name;
+
+      const renameBtn = document.createElement("button");
+      renameBtn.className = "icon-btn";
+      renameBtn.title = "Rename topic";
+      renameBtn.textContent = "✏️";
+      renameBtn.addEventListener("click", () => startRename(topic, titleSpan));
+
+      const deleteTopicBtn = document.createElement("button");
+      deleteTopicBtn.className = "icon-btn danger";
+      deleteTopicBtn.title = "Delete topic";
+      deleteTopicBtn.textContent = "🗑️";
+      deleteTopicBtn.addEventListener("click", () => deleteTopic(topic.id, topic.name));
+
+      header.append(titleSpan, renameBtn, deleteTopicBtn);
+
+      // ── Next button ──
+      const nextBtn = document.createElement("button");
+      nextBtn.className = "next-btn";
+      nextBtn.textContent = "▶ Next";
+      nextBtn.disabled = topicNames.length === 0;
+      nextBtn.addEventListener("click", () => advanceNext(topic.id));
+
+      // ── Add name form ──
+      const addForm = document.createElement("form");
+      addForm.className = "add-name-form";
+      const nameInput = document.createElement("input");
+      nameInput.type = "text";
+      nameInput.placeholder = "Add a name…";
+      nameInput.maxLength = 60;
+      nameInput.required = true;
+      const addBtn = document.createElement("button");
+      addBtn.className = "btn-add";
+      addBtn.type = "submit";
+      addBtn.textContent = "Add";
+      addForm.append(nameInput, addBtn);
+      addForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const name = nameInput.value.trim();
+        if (!name) return;
+        nameInput.value = "";
+        await addName(topic.id, name, topicNames);
+      });
+
+      // ── Names list ──
+      const ul = document.createElement("ul");
+      ul.className = "names-list";
+
+      if (topicNames.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "No names yet.";
+        ul.appendChild(empty);
+      } else {
+        topicNames.forEach((n, idx) => {
+          const li = document.createElement("li");
+          if (n.is_current) li.classList.add("current");
+
+          // Move up/down buttons
+          const moveBtns = document.createElement("div");
+          moveBtns.className = "move-btns";
+
+          const upBtn = document.createElement("button");
+          upBtn.className = "move-btn";
+          upBtn.textContent = "▲";
+          upBtn.title = "Move up";
+          upBtn.disabled = idx === 0;
+          upBtn.addEventListener("click", () => moveName(n.id, "up", topic.id));
+
+          const downBtn = document.createElement("button");
+          downBtn.className = "move-btn";
+          downBtn.textContent = "▼";
+          downBtn.title = "Move down";
+          downBtn.disabled = idx === topicNames.length - 1;
+          downBtn.addEventListener("click", () => moveName(n.id, "down", topic.id));
+
+          moveBtns.append(upBtn, downBtn);
+
+          // Name text
+          const nameText = document.createElement("span");
+          nameText.className = "name-text";
+          nameText.textContent = n.name;
+
+          // Current badge
+          const badge = n.is_current ? (() => {
+            const b = document.createElement("span");
+            b.className = "current-badge";
+            b.textContent = "Now";
+            return b;
+          })() : null;
+
+          // Delete name button
+          const delBtn = document.createElement("button");
+          delBtn.className = "icon-btn danger";
+          delBtn.textContent = "✕";
+          delBtn.title = "Remove";
+          delBtn.addEventListener("click", () => deleteName(n.id));
+
+          li.append(moveBtns, nameText);
+          if (badge) li.appendChild(badge);
+          li.appendChild(delBtn);
+          ul.appendChild(li);
+        });
+      }
+
+      card.append(header, nextBtn, addForm, ul);
+      grid.appendChild(card);
+    }
+  }
+
+  // ── Rename topic inline ──
+  function startRename(topic, titleSpan) {
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "topic-title-input";
+    input.value = topic.name;
+    input.maxLength = 80;
+    titleSpan.replaceWith(input);
+    input.focus();
+    input.select();
+
+    const save = async () => {
+      const newName = input.value.trim();
+      if (newName && newName !== topic.name) {
+        await supabase.from("hosting_topics").update({ name: newName }).eq("id", topic.id);
+      } else {
+        loadHosting();
+      }
+    };
+
+    input.addEventListener("blur", save);
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") { e.preventDefault(); input.blur(); }
+      if (e.key === "Escape") { input.value = topic.name; input.blur(); }
+    });
+  }
+
+  // ── Delete topic ──
+  async function deleteTopic(id, name) {
+    if (!confirm(`Delete topic "${name}" and all its names?`)) return;
+    const { error } = await supabase.from("hosting_topics").delete().eq("id", id);
+    if (error) alert("Couldn't delete topic: " + error.message);
+  }
+
+  // ── Add name ──
+  async function addName(topicId, name, topicNames) {
+    const maxPos = topicNames.length > 0
+      ? Math.max(...topicNames.map(n => n.position))
+      : -1;
+    const isFirst = topicNames.length === 0;
+    const { error } = await supabase.from("hosting_names").insert({
+      topic_id: topicId,
+      name,
+      position: maxPos + 1,
+      is_current: isFirst   // first name auto-becomes current
+    });
+    if (error) alert("Couldn't add name: " + error.message);
+  }
+
+  // ── Delete name ──
+  async function deleteName(id) {
+    const { error } = await supabase.from("hosting_names").delete().eq("id", id);
+    if (error) alert("Couldn't remove name: " + error.message);
+  }
+
+  // ── Advance to next host ──
+  async function advanceNext(topicId) {
+    const topicNames = getNamesForTopic(topicId);
+    if (topicNames.length === 0) return;
+
+    const currentIdx = topicNames.findIndex(n => n.is_current);
+    const nextIdx = (currentIdx + 1) % topicNames.length;  // wraps around; -1+1=0 if none set
+
+    // Clear all current flags for this topic then set the next one
+    const { error: clearErr } = await supabase
+      .from("hosting_names")
+      .update({ is_current: false })
+      .eq("topic_id", topicId);
+    if (clearErr) { alert("Error: " + clearErr.message); return; }
+
+    const { error: setErr } = await supabase
+      .from("hosting_names")
+      .update({ is_current: true })
+      .eq("id", topicNames[nextIdx].id);
+    if (setErr) alert("Error: " + setErr.message);
+  }
+
+  // ── Move name up or down ──
+  async function moveName(nameId, direction, topicId) {
+    const topicNames = getNamesForTopic(topicId);
+    const idx = topicNames.findIndex(n => n.id === nameId);
+    if (idx === -1) return;
+
+    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= topicNames.length) return;
+
+    const curr = topicNames[idx];
+    const swap = topicNames[swapIdx];
+
+    // Swap position values
+    const [r1, r2] = await Promise.all([
+      supabase.from("hosting_names").update({ position: swap.position }).eq("id", curr.id),
+      supabase.from("hosting_names").update({ position: curr.position }).eq("id", swap.id)
+    ]);
+    if (r1.error) alert("Error: " + r1.error.message);
+    if (r2.error) alert("Error: " + r2.error.message);
+  }
+
+  // ── Load hosting data ──
+  async function loadHosting() {
+    const [{ data: topicsData, error: tErr }, { data: namesData, error: nErr }] =
+      await Promise.all([
+        supabase.from("hosting_topics").select("*").order("created_at", { ascending: true }),
+        supabase.from("hosting_names").select("*").order("position", { ascending: true })
+      ]);
+
+    if (tErr || nErr) {
+      console.error("Hosting load error:", tErr || nErr);
+      return;
+    }
+    topics = topicsData || [];
+    names  = namesData  || [];
+    renderHosting();
+  }
+
+  // ── New topic form ──
+  document.getElementById("newTopicForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const input = document.getElementById("newTopicInput");
+    const name = input.value.trim();
+    if (!name) return;
+    input.value = "";
+    const { error } = await supabase.from("hosting_topics").insert({ name });
+    if (error) alert("Couldn't create topic: " + error.message);
+  });
+
+  // ── Realtime subscriptions ──
   function subscribe() {
     supabase
       .channel("ideas-changes")
-      .on("postgres_changes",
-          { event: "*", schema: "public", table: "ideas" },
-          () => loadIdeas())
+      .on("postgres_changes", { event: "*", schema: "public", table: "ideas" }, () => loadIdeas())
+      .subscribe();
+
+    supabase
+      .channel("hosting-changes")
+      .on("postgres_changes", { event: "*", schema: "public", table: "hosting_topics" }, () => loadHosting())
+      .on("postgres_changes", { event: "*", schema: "public", table: "hosting_names" },  () => loadHosting())
       .subscribe();
   }
 
-  // Boot
+  // ── Boot ──
   if (!SUPABASE_URL.startsWith("YOUR_") && !SUPABASE_ANON_KEY.startsWith("YOUR_")) {
     loadIdeas();
+    loadHosting();
     subscribe();
   } else {
-    drawWheel(); // show the empty-state circle
+    drawWheel();
+    renderHosting();
   }
 </script>
 </body>
 </html>
-
